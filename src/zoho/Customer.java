@@ -23,7 +23,7 @@ public class Customer extends Ministatement {
 	
 	
 	}
-	public static void getCustomerDetailsFromDB(Customer cu[],int index)
+	public static Customer[] getCustomerDetailsFromDB(Customer cu[],int index)
 	{
 		try
 			{
@@ -49,6 +49,8 @@ public class Customer extends Ministatement {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return cu;
+		
 	}
 	public void showCustomerDetails()
 	{

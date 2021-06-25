@@ -13,7 +13,7 @@ public class Driver extends Balance  {
 		String adminUser = input.next();
 		System.out.println("Enter Admin Password");
 		String adminPass=input.next();
-		input.close();
+		
 		if(adminUser.equalsIgnoreCase("admin")&&adminPass.equals("admin"))
 		{
 			return true;
@@ -23,8 +23,9 @@ public class Driver extends Balance  {
 			return false;
 		}
 	}
-	public static void customerOperations(int atmTaskNumber , Customer cu[] , int i, int tempPIN)
+	public static void customerOperations(Customer cu[] , int i, int tempPIN)
 		{
+		int atmTaskNumber = 0;
 		Scanner input =new Scanner(System.in);
 		while(atmTaskNumber!=5)
 		{
@@ -61,7 +62,7 @@ public class Driver extends Balance  {
 					cu[i].updateCustomerBalance(i);
 
 						System.out.println("Withdraw Completed\n");
-						System.out.println("1000s:"+(flagThousand-thousandCounter)+" 500s:"+(flagFivehundred-fiveHundredCounter)+" 100s:"+(flagHundred-hundredCounter));
+						System.out.println("1000s:"+(flagThousand-thousandCounter)+" 500s:"+(flagFivehundred-fiveHundredCounter)+" 100s:"+(flagHundred-hundredCounter));//TODO
 					
 					}
 					else 
@@ -130,7 +131,7 @@ public class Driver extends Balance  {
 			}
 			
 		}
-		input.close();
+		
 		}
 
 	public static void main(String[] args) {
@@ -138,20 +139,24 @@ public class Driver extends Balance  {
 		try {
 			Scanner input =new Scanner(System.in);
 			getBalanceFromDB();
-			System.out.println(totalCash+" "+thousandCounter+" "+fiveHundredCounter+" "+" "+hundredCounter);
+			//System.out.println(totalCash+" "+thousandCounter+" "+fiveHundredCounter+" "+" "+hundredCounter);
 			int task_no= 0;
 			Customer[] cu=new Customer[5];
+		
 			for(int i=0;i<5;i++)
 			{
 				cu[i]=new Customer();
-			}
+			}//TODO
+			cu=	getCustomerDetailsFromDB(cu, 0);
 			while(task_no!=5)
 			{
 				int i=0;
-				getCustomerDetailsFromDB(cu, i);
+			
 				
 				System.out.println("ATM \n\n Choose your task \n 1.Load cash(Admin) \n 2.Show Customer details(Admin) \n 3.Customer ATM operations(Customer) \n 4.Show Total Balance(ADMIN)\n 5.exit");
+			
 				task_no=input.nextInt();
+				
 				if(task_no==1)//											Load cash to ATM
 				{
 					
@@ -206,8 +211,8 @@ public class Driver extends Balance  {
 						checkifBalalanceIsNull();
 						if(cu[i].accountNumber==tempAcc&&cu[i].PIN==tempPIN)//UserName and PIN VALIDATION
 						{	
-							int atmTaskNumber = 0;
-							customerOperations(atmTaskNumber, cu, i, tempPIN);
+							
+							customerOperations( cu, i, tempPIN);
 							
 							
 							}
@@ -233,7 +238,7 @@ public class Driver extends Balance  {
 				
 			}
 
-		input.close();
+		
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
