@@ -6,14 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 
-public class Balance extends Customer
+public class Balance 
 {
-static int totalCash=0;
-static int thousandCounter=0;
-static int fiveHundredCounter=0;
-static int hundredCounter=0;
+public static int totalCash=0;
+public static int thousandCounter=0;
+public static int fiveHundredCounter=0;
+public static int hundredCounter=0;
 	{
 	try
 		{
@@ -81,7 +82,7 @@ static int hundredCounter=0;
 			String selectBalanceZero = "select * from balance";
 			ResultSet rs = Stmnt.executeQuery(selectBalanceZero);
 			
-			if(!rs.next())
+			if(! rs.next())
 			{
 			Stmnt.executeUpdate(insertBalanceZero);
 			totalCash=0;
@@ -110,27 +111,27 @@ static int hundredCounter=0;
 		
 		
 	}
-	public static boolean  withDraw(int tempWithdraw,Customer cu[],int i)
+	public static boolean  withDraw(int tempWithdraw,Customer customer)
 	{
-		if(tempWithdraw%100!=0)
+		if(tempWithdraw % 100 != 0)
 		{
 			System.out.println("Enter Multiple of hundred");
 			return false;
 			
 		}
-		if(totalCash<tempWithdraw)
+		if(totalCash < tempWithdraw)
 		{
 			System.out.println("Not enough money ");
 			return false;
 			
 		}
-		if(tempWithdraw<100 || tempWithdraw>=10000)
+		if(tempWithdraw < 100 || tempWithdraw >= 10000)
 		{
 			System.out.println("Exceeded the limits");
 			return false;
 			
 		}
-		if(cu[i].balance<tempWithdraw)
+		if(customer.balance < tempWithdraw)
 		{
 			System.out.println("Balance too low ");
 			return false;
@@ -138,15 +139,15 @@ static int hundredCounter=0;
 			
 			
 		}
-		if(tempWithdraw<=5000)
+		if(tempWithdraw <= 5000)
 		{
-			if(thousandCounter==0)
+			if(thousandCounter == 0)
 			{
-				if(fiveHundredCounter==0)
+				if(fiveHundredCounter == 0)
 				{
-					if(tempWithdraw/100<=hundredCounter)
+					if(tempWithdraw/100 <= hundredCounter)
 					{
-						hundredCounter=hundredCounter-(tempWithdraw/100);
+						hundredCounter = hundredCounter - (tempWithdraw/100);
 						return true;
 					}
 					else
@@ -158,10 +159,10 @@ static int hundredCounter=0;
 				}
 				else 
 				{
-					if(tempWithdraw/500<=fiveHundredCounter||(tempWithdraw-(fiveHundredCounter*500))/100<=hundredCounter)
+					if(tempWithdraw / 500 <= fiveHundredCounter || (tempWithdraw - (fiveHundredCounter * 500)) / 100 <= hundredCounter)
 					{
-						fiveHundredCounter=fiveHundredCounter-((tempWithdraw)/500);
-						hundredCounter=hundredCounter-(((tempWithdraw)%500)/100);
+						fiveHundredCounter = fiveHundredCounter - ((tempWithdraw)/500);
+						hundredCounter = hundredCounter - (((tempWithdraw)%500)/100);
 						return true;
 					}
 					else
@@ -176,8 +177,8 @@ static int hundredCounter=0;
 				{
 				if(tempWithdraw<1000)
 				{
-					fiveHundredCounter=fiveHundredCounter-(tempWithdraw/500);
-					hundredCounter=hundredCounter-((tempWithdraw%500)/100);		
+					fiveHundredCounter = fiveHundredCounter-(tempWithdraw/500);
+					hundredCounter = hundredCounter-((tempWithdraw%500)/100);		
 					return true;
 					
 				}
@@ -186,35 +187,35 @@ static int hundredCounter=0;
 					thousandCounter=thousandCounter-1;
 					if(tempWithdraw-1000<500)
 					{
-						hundredCounter=hundredCounter-((tempWithdraw-1000)/100);
+						hundredCounter = hundredCounter-((tempWithdraw-1000)/100);
 						return true;
 					}
 					
 					
 					else if(((tempWithdraw-1000)/500)>6)
 						{
-							fiveHundredCounter=fiveHundredCounter-6;
-							hundredCounter=hundredCounter-((tempWithdraw-4000)/100);
+							fiveHundredCounter = fiveHundredCounter - 6;
+							hundredCounter=  hundredCounter - ((tempWithdraw-4000)/100);
 							return true;
 							
 						}
 					else 
 					{
-						fiveHundredCounter=fiveHundredCounter-((tempWithdraw-1000)/500);
-						hundredCounter=hundredCounter-(((tempWithdraw-1000)%500)/100);
+						fiveHundredCounter = fiveHundredCounter - ((tempWithdraw-1000)/500);
+						hundredCounter = hundredCounter - (((tempWithdraw-1000)%500)/100);
 						return true;
 					}
 					
 				}
 			}
 		}
-		else if(tempWithdraw>5000)
+		else if(tempWithdraw > 5000)
 		{
-			if(thousandCounter==0)
+			if(thousandCounter == 0)
 			{
-				if(fiveHundredCounter==0)
+				if(fiveHundredCounter == 0)
 				{
-					if(tempWithdraw/100<=hundredCounter)
+					if(tempWithdraw/100 <= hundredCounter)
 					{
 						hundredCounter=hundredCounter-(tempWithdraw/100);
 						return true;
@@ -228,7 +229,7 @@ static int hundredCounter=0;
 				}
 				else 
 				{
-					if(tempWithdraw/500<=fiveHundredCounter||(tempWithdraw-(fiveHundredCounter*500))/100<=hundredCounter)
+					if(tempWithdraw/500 <= fiveHundredCounter || (tempWithdraw-(fiveHundredCounter*500))/100<=hundredCounter)
 					{
 						fiveHundredCounter=fiveHundredCounter-((tempWithdraw)/500);
 						hundredCounter=hundredCounter-(((tempWithdraw)%500)/100);
@@ -251,13 +252,13 @@ static int hundredCounter=0;
 			fiveHundredCounter=fiveHundredCounter-2;
 			hundredCounter=hundredCounter-10;
 	
-			if(tempWithdraw<6000)
+			if(tempWithdraw < 6000)
 			{
 				fiveHundredCounter=fiveHundredCounter-((tempWithdraw-5000)/500);
 				hundredCounter=hundredCounter-(((tempWithdraw-5000)%500)/100);	
 				return true;
 			}
-			else if(tempWithdraw>=6000)
+			else if(tempWithdraw >= 6000)
 			{
 				fiveHundredCounter=fiveHundredCounter-((tempWithdraw-5000)/500);
 				hundredCounter=hundredCounter-(((tempWithdraw-5000)%500)/100);	

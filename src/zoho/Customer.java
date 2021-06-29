@@ -6,10 +6,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
-public class Customer extends Ministatement {
+public class Customer {
 	public int accountNumber,balance,PIN;
 	public String accountHolder=new String();
+	Customer(int accNo,String accHolder,int accPIN , int accBalance)
+	{
+		accountNumber=accNo;
+		accountHolder=accHolder;
+		PIN=accPIN;
+		balance=accBalance;
+		
+	}
+	Customer()
+	{
+		
+	}
 	{
 	try
 	{
@@ -20,10 +33,10 @@ public class Customer extends Ministatement {
 	{
 		e.printStackTrace();
 	}
-	
+
 	
 	}
-	public static Customer[] getCustomerDetailsFromDB(Customer cu[],int index)
+	public static ArrayList<Customer> getCustomerDetailsFromDB(ArrayList<Customer> customer,int index)
 	{
 		try
 			{
@@ -32,14 +45,15 @@ public class Customer extends Ministatement {
 			        ResultSet.CONCUR_UPDATABLE);
 			String customerSelectStatement = " select * from customer";
 			ResultSet re =Stmnt.executeQuery(customerSelectStatement );
+			Customer cu = new Customer();
 			while(re.next())
 			{
 				
-			cu[index].accountNumber=re.getInt(1);	
-			cu[index].accountHolder=re.getNString(2);
-			cu[index].PIN=re.getInt(3);
-			cu[index].balance=re.getInt(4);
-		
+//			customer.get(index).accountNumber=re.getInt(1);	
+//			customer.get(index).accountHolder=re.getNString(2);
+//			customer.get(index).PIN=re.getInt(3);
+//			customer.get(index).balance=re.getInt(4);
+		customer.add(new Customer(re.getInt(1),re.getNString(2),re.getInt(3),re.getInt(4)));
 	
 			index++;
 			}
@@ -49,7 +63,11 @@ public class Customer extends Ministatement {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return cu;
+		return customer;
+		
+	}
+	private void Customer() {
+		// TODO Auto-generated method stub
 		
 	}
 	public void showCustomerDetails()
@@ -63,6 +81,7 @@ public class Customer extends Ministatement {
 	{
 		return "The balance in your account is "+this.balance;
 	}
+
 	public void updateCustomerBalance(int i)
 	{
 		try {
@@ -73,7 +92,7 @@ public class Customer extends Ministatement {
 				 PreparedStatement pe=con.prepareStatement(CustomerUpdate);
 					
 					pe.setInt(1, this.balance);
-					pe.setInt(2, (100+i+1));
+					pe.setInt(2, (this.accountNumber));
 					pe.executeUpdate();
 					
 				
@@ -87,6 +106,26 @@ public class Customer extends Ministatement {
 				e.printStackTrace();
 			}
 			
+	}
+	public boolean isAccount(ArrayList<Customer> customer , int accNumber)
+	{
+		int flag = 0;
+		for(int i = 0 ; i < customer.size() ; i++)
+		{
+			if(customer.get(i).accountNumber == accNumber)
+			{
+				flag=1;
+			}
+			{
+			
+			if(flag==1)
+			{
+				return true;
+			}
+			return false;
+		
+			
+	
 	}
 	
 }

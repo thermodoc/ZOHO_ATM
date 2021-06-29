@@ -1,11 +1,12 @@
 package zoho;
 
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 
 
-public class Driver extends Balance  {
+public class Driver  {
 	
 	public static boolean isAdmin()
 	{	Scanner input =new Scanner(System.in);
@@ -23,46 +24,46 @@ public class Driver extends Balance  {
 			return false;
 		}
 	}
-	public static void customerOperations(Customer cu[] , int i, int tempPIN)
+	public static void customerOperations(ArrayList<Customer> customer , int i, int tempPIN)
 		{
 		int atmTaskNumber = 0;
 		Scanner input =new Scanner(System.in);
-		while(atmTaskNumber!=5)
+		while(atmTaskNumber != 5)
 		{
 				System.out.println("Choice \n 1.Check Balance \n 2. Withdraw money \n 3.Transfer Money \n 4.Mini statement \n 5.Exit");
 				 atmTaskNumber = input.nextInt();
-			if(atmTaskNumber==1)// Checking Balance
+			if(atmTaskNumber == 1)// Checking Balance
 			{
-				String CustomerBalance = cu[i].showCustomerBalance();
+				String CustomerBalance = customer.get(i).showCustomerBalance();
 				System.out.println(CustomerBalance);
 				
 				
 			}
-			 if(atmTaskNumber==2)// Withdraw Amount 
-			{	checkifBalalanceIsNull();
+			 if(atmTaskNumber == 2)// Withdraw Amount 
+			{	Balance.checkifBalalanceIsNull();
 				System.out.println("Enter PIN :");
 				tempPIN = input.nextInt();
 				//int flagTotal=totalCash;
-				int flagThousand=thousandCounter;
-				int flagFivehundred=fiveHundredCounter;
-				int flagHundred=hundredCounter;
+				int flagThousand=Balance.thousandCounter;
+				int flagFivehundred=Balance.fiveHundredCounter;
+				int flagHundred=Balance.hundredCounter;
 				
 				
-				if(cu[i].PIN==tempPIN)
+				if(customer.get(i).PIN == tempPIN)
 				{
 					System.out.println("Enter Amount to withdraw");
 					int tempWithdraw = input.nextInt();
-					boolean isWithdraw=withDraw(tempWithdraw, cu, i);
+					boolean isWithdraw=Balance.withDraw(tempWithdraw, customer.get(i));
 					if(isWithdraw)
 					{
-					totalCash=totalCash-tempWithdraw;
-					updateBalance();
-					cu[i].balance=cu[i].balance-tempWithdraw;
-					updateMiniStatementDebit(tempWithdraw,cu,i);
-					cu[i].updateCustomerBalance(i);
+					Balance.totalCash=Balance.totalCash-tempWithdraw;
+					Balance.updateBalance();
+					customer.get(i).balance=customer.get(i).balance-tempWithdraw;
+					Ministatement.updateMiniStatementDebit(tempWithdraw,customer.get(i));
+					customer.get(i).updateCustomerBalance(i);
 
 						System.out.println("Withdraw Completed\n");
-						System.out.println("1000s:"+(flagThousand-thousandCounter)+" 500s:"+(flagFivehundred-fiveHundredCounter)+" 100s:"+(flagHundred-hundredCounter));//TODO
+						System.out.println("1000s:"+(flagThousand-Balance.thousandCounter)+" 500s:"+(flagFivehundred-Balance.fiveHundredCounter)+" 100s:"+(flagHundred-Balance.hundredCounter));//TODO
 					
 					}
 					else 
@@ -76,39 +77,45 @@ public class Driver extends Balance  {
 				}
 			
 			}
-			 if(atmTaskNumber==3)//TransferAmount
+			 if(atmTaskNumber == 3)//TransferAmount
 			{
 				
 				System.out.println("Enter account number to transfer money");
 				int tempAccno = input.nextInt();
-				if(tempAccno==cu[i].accountNumber)
+				if(!customer.get(i).isAccount(customer , tempAccno))
+				{
+					System.out.println("Enter Correct Account number");
+					break;
+				}
+				if(tempAccno==customer.get(i).accountNumber)
 					{
 						System.out.println("Cant transfer to the same account");
 						break;
 					}
+			
 				int j=0;
-				while(j<5)
+				while(j < 5)
 				{
-					if(cu[j].accountNumber==tempAccno)
+					if(customer.get(j).accountNumber == tempAccno)
 						
 					{	int flag=j;
 						System.out.println("Enter Amount to transfer");
 						int tempTransfer = input.nextInt();
-						if(tempTransfer>cu[i].balance)
+						if(tempTransfer > customer.get(i).balance)
 						{
 							System.out.println("insuffient bal");
 							break;
 						}
-						if(tempTransfer>=1000&&tempTransfer<=10000)
+						if(tempTransfer >= 1000 && tempTransfer <= 10000)
 						{
-							cu[i].balance=cu[i].balance-tempTransfer;
-							cu[j].balance=cu[j].balance+tempTransfer;
-							cu[i].updateCustomerBalance(i);
-							cu[flag].updateCustomerBalance(flag);
+							customer.get(i).balance=customer.get(i).balance-tempTransfer;
+							customer.get(j).balance=customer.get(j).balance+tempTransfer;
+							customer.get(i).updateCustomerBalance(i);
+							customer.get(flag).updateCustomerBalance(flag);
 							
 							
-							updateMiniStatementTransferDebit(tempTransfer, cu, i, flag);
-							updateMiniStatementTransferCredit(tempTransfer, cu, flag, i);
+							Ministatement.updateMiniStatementTransferDebit(tempTransfer, customer, i, flag);
+							Ministatement.updateMiniStatementTransferCredit(tempTransfer, customer, flag, i);
 														
 						
 							
@@ -125,9 +132,9 @@ public class Driver extends Balance  {
 					j++;
 				}
 			}
-			 if(atmTaskNumber==4)//MiniStatement 
+			 if(atmTaskNumber == 4)//MiniStatement 
 			{
-				 printMiniStatement(cu, i);
+				 Ministatement.printMiniStatement(customer, i);
 			}
 			
 		}
@@ -138,30 +145,26 @@ public class Driver extends Balance  {
 		
 		try {
 			Scanner input =new Scanner(System.in);
-			getBalanceFromDB();
+			Balance.getBalanceFromDB();
 			//System.out.println(totalCash+" "+thousandCounter+" "+fiveHundredCounter+" "+" "+hundredCounter);
-			int task_no= 0;
-			Customer[] cu=new Customer[5];
+			int taskNo= 0;
+			ArrayList<Customer> customer = new ArrayList<Customer>();
 		
-			for(int i=0;i<5;i++)
-			{
-				cu[i]=new Customer();
-			}//TODO
-			cu=	getCustomerDetailsFromDB(cu, 0);
-			while(task_no!=5)
+			customer=Customer.getCustomerDetailsFromDB(customer, 0);
+			while(taskNo != 5)
 			{
 				int i=0;
 			
 				
 				System.out.println("ATM \n\n Choose your task \n 1.Load cash(Admin) \n 2.Show Customer details(Admin) \n 3.Customer ATM operations(Customer) \n 4.Show Total Balance(ADMIN)\n 5.exit");
 			
-				task_no=input.nextInt();
+				taskNo=input.nextInt();
 				
-				if(task_no==1)//											Load cash to ATM
+				if(taskNo==1)//											Load cash to ATM
 				{
 					
-					checkifBalalanceIsNull();
-					if(isAdmin()==true)
+					Balance.checkifBalalanceIsNull();
+					if(isAdmin() == true)
 					{
 						
 								System.out.println("Enter how many lakhs to load :");
@@ -171,7 +174,7 @@ public class Driver extends Balance  {
 							System.out.println("Enter Positive number ");
 							break;
 						}
-					loadBalance(n);
+					Balance.loadBalance(n);
 					}
 					else 
 					{
@@ -180,16 +183,16 @@ public class Driver extends Balance  {
 					
 					
 					}
-					else if(task_no==2) // Display the customer details 
+					else if(taskNo == 2) // Display the customer details 
 					{
 					
 						
 						if(isAdmin())
 						{
 							System.out.println("Account Number		Account Holder		PIN		Balance\n");
-							for(i=0;i<5;i++)
+							for(i=0;i<customer.size();i++)
 							{
-							cu[i].showCustomerDetails();
+							customer.get(i).showCustomerDetails();
 							}
 						}
 						else 
@@ -199,20 +202,27 @@ public class Driver extends Balance  {
 					}
 				
 				
-				else if (task_no==3)//Show ATM process
+				else if (taskNo == 3)//Show ATM process
 				{
 		
 					System.out.println("Enter your account number: ");
 					int tempAcc = input.nextInt();
 					System.out.println("Enter your PIN: ");
 					int tempPIN = input.nextInt();
-					for(i=0;i<5;i++)
+					for(i=0;i<customer.size();i++)
 					{
-						checkifBalalanceIsNull();
-						if(cu[i].accountNumber==tempAcc&&cu[i].PIN==tempPIN)//UserName and PIN VALIDATION
+						if(!customer.get(i).isAccount(customer , tempAcc))
+						{
+							System.out.println("Enter Correct Account number");
+							break;
+						}
+						Balance.checkifBalalanceIsNull();
+						if(customer.get(i).accountNumber == tempAcc)//UserName and PIN VALIDATION
 						{	
-							
-							customerOperations( cu, i, tempPIN);
+							if(customer.get(i).PIN == tempPIN)
+							customerOperations( customer, i, tempPIN);
+							else
+								System.out.println("Check the Credentials");
 							
 							
 							}
@@ -220,14 +230,14 @@ public class Driver extends Balance  {
 						}
 						
 					}
-					else if(task_no==4)//Show Total Balance of the machine 
+					else if(taskNo == 4)//Show Total Balance of the machine 
 					{
 			
-						checkifBalalanceIsNull();
+						Balance.checkifBalalanceIsNull();
 					
 						if(isAdmin())
 						{
-							showBalance();
+							Balance.showBalance();
 				
 							}
 						else 
@@ -237,8 +247,6 @@ public class Driver extends Balance  {
 					}
 				
 			}
-
-		
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block
